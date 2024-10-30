@@ -1,0 +1,10 @@
+statsmodels
+tensorflow
+streamlit
+pandas
+numpy
+plotly_express
+seaborn
+ipykernel
+yfinance
+-e .
