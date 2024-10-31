@@ -12,12 +12,15 @@ def get_data(path):
 df=get_data(os.path.join(RAW_DATA_DIR, get_last_dataset()))
 
 with st.sidebar:
+    st.subheader('Settings')
     time_delta=st.slider('Show days before', min_value=1, max_value=df.shape[0])
     tickers=st.multiselect(label='tickers', options=TICKERS.split(), default='MSFT')
 
     model=st.selectbox('Select a model', ['ARIMA', 'RNN'])
 
     predict=st.button('Predict next day')
+
+    retrain=st.button('Retrain')
 
 
 st.header(' '.join(tickers))

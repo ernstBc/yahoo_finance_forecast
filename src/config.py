@@ -12,5 +12,8 @@ MODEL_DIR=Path(WORKDIR, 'models')
 
 TICKERS='msft goog NVDA'.upper()
 
+BATCH_SIZE=32
+WINDOW_SIZE=15
+
 if __name__=='__main__':
     print(WORKDIR)
