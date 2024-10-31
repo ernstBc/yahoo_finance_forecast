@@ -1,18 +1,20 @@
 import tensorflow as tf
 import datetime
+from pathlib import Path
 
 from tensorflow.keras.layers import SimpleRNN, Dense, GRU
 from tensorflow.keras import Sequential
 
-from src.config import WINDOW_SIZE, MODEL_DIR
+from src.config import WINDOW_SIZE, MODEL_DIR, CHECKPOINT_DIR
 from dataclasses import dataclass
 
 @dataclass
 class TrainerConfig:
     window_size:int=WINDOW_SIZE
-    model_id=datetime.datetime.now().strftime('%Y-%m-%d')
+    model_id=datetime.datetime.now().strftime('%Y_%m_%d')
     model_path=MODEL_DIR
-    model_save_path=str(model_path)+str(model_id)
+    model_save_path=Path(model_path, model_id)
+    checkpoint=Path.joinpath(CHECKPOINT_DIR, 'checkpoint.weights.h5')
 
 
 class TrainerNeuralNetwork:
@@ -28,11 +30,18 @@ class TrainerNeuralNetwork:
                               recurrent_units=self.recurrent_units,
                               window_size=self.config.window_size)
         
+        callbacks=get_callbacks(self.config.checkpoint)
+        
 
-        hist=model.fit(train_dataset, epochs=epochs, validation_data=val_dataset)
-        tf.saved_model.save(model, self.config.model_save_path)
+        hist=model.fit(train_dataset,
+                        epochs=epochs, 
+                        validation_data=val_dataset,
+                        callbacks=[callbacks])
+        
+        model.load_weights(self.config.checkpoint)
+        model.save(str(self.config.model_save_path)+'.keras')
 
-        return self.confi.model_save_path, hist
+        return self.config.model_save_path, hist
         
 
 def build_nn_models(dense_units, recurrent_units, window_size):
@@ -47,3 +56,18 @@ def build_nn_models(dense_units, recurrent_units, window_size):
                   metrics=['mae'])
     
     return model
+
+def get_callbacks(filepath):
+    callback=tf.keras.callbacks.ModelCheckpoint(
+        filepath=filepath,
+        monitor="val_loss",
+        verbose=0,
+        save_best_only=True,
+        save_weights_only=True,
+        )
+    return callback
+
+
+if __name__=='__main__':
+    trainer=TrainerNeuralNetwork(1,1)
+    print(trainer.config.checkpoint)

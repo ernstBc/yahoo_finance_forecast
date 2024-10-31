@@ -18,7 +18,7 @@ def check_database_day():
     db_day=db_day[-1]
     db_day=db_day.split('.')[0]
 
-    if today >= db_day:
+    if today <= db_day:
         on_time=True
 
     return on_time

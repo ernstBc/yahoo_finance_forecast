@@ -5,6 +5,7 @@ from src.config import RAW_DATA_DIR, TRAIN_DATA_DIR, VAL_DATA_DIR, TICKERS
 from dataclasses import dataclass
 import datetime
 from src.utils import check_database_day
+from src.config import TICKERS
 
 @dataclass
 class IngestionConfig:
@@ -20,7 +21,10 @@ class DataIngestion:
 
     def init_data_ingestion(self, tickers:str, time_delta:str):
         db_on_date=check_database_day()
-        if db_on_date is False:
+        print('check data', db_on_date)
+        
+        if db_on_date == False:
+            print('Downloading today data')
             data=get_data(tickers, time_delta)
             data.index=data.index.strftime('%Y-%m-%d')
 
@@ -62,4 +66,4 @@ def get_data(tickers:str, time_delta:str):
 
 if __name__=='__main__':
     ingestion=DataIngestion()
-    ingestion.init_data_ingestion(TICKERS, '1y')
+    ingestion.init_data_ingestion(TICKERS, '5y')
