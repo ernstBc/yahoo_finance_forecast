@@ -65,5 +65,4 @@ def get_data(tickers:str, time_delta:str):
     
 
 if __name__=='__main__':
-    ingestion=DataIngestion()
-    ingestion.init_data_ingestion(TICKERS, '5y')
+    print(check_database_day())

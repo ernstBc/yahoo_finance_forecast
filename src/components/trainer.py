@@ -1,15 +1,17 @@
 import datetime
 from pathlib import Path
 from statsmodels.tsa.arima.model import ARIMA
-from src.config import MODEL_DIR
+from src.config import MODEL_DIR, FORECAST_DIR
 from src.utils import save_artifact
 from dataclasses import dataclass
 
 @dataclass
 class TrainerArimaConfig:
-    model_id=datetime.datetime.now().strftime('%Y-%m-%d')
+    model_id=datetime.datetime.now().strftime('%Y_%m_%d')
     model_path=MODEL_DIR
     model_save_dir=Path.joinpath(model_path, f'{model_id}.pkl')
+    forecast_save_dir=Path.joinpath(FORECAST_DIR, f'{model_id}.pkl')
+
 
 
 class TrainerARIMA:
@@ -17,12 +19,13 @@ class TrainerARIMA:
         self.config=TrainerArimaConfig()
 
     def init_trainer(self, train_dataset, max_ar:int, max_i:int,max_ma:int):
-        model=search_model(train_dataset=train_dataset, max_ar=max_ar, max_i=max_i, max_ma=max_ma)
+        model, forecast, _=search_model(train_dataset=train_dataset, max_ar=max_ar, max_i=max_i, max_ma=max_ma)
         print('path save', str(self.config.model_path)+str(self.config.model_id)+'.plk')
 
         save_artifact(self.config.model_save_dir, model)
+        save_artifact(self.config.forecast_save_dir, forecast)
 
-        return self.config.model_save_dir
+        return self.config.model_save_dir, self.config.forecast_save_dir
 
 
 
